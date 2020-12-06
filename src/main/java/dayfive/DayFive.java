@@ -3,7 +3,8 @@ package dayfive;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.OptionalInt;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -11,30 +12,32 @@ import java.util.stream.Stream;
 public class DayFive {
   public static void main(String[] args) throws IOException {
     Stream<String> lines = Files.lines(Paths.get("src/main/resources/dayfiveinput.txt"));
-    partTwo(lines);
+    System.out.println(getMissingSeat(lines));
   }
 
-  static void partTwo(Stream<String> lines) {
-    Set<Integer> seats = lines.map(String::toCharArray)
-        .map(DayFive::getSeat).map(seat -> seat.seatNumber).collect(Collectors.toSet());
+  static int getMissingSeat(Stream<String> lines) {
+    List<char[]> input = lines.map(String::toCharArray).collect(Collectors.toList());
 
-    int maxSeat = 127 * 8 + 7;
-    for (int i = 1; i <= maxSeat; i++) {
+    Set<Integer> seats = new HashSet<>();
+    int minSeat = Integer.MAX_VALUE;
+    int maxSeat = Integer.MIN_VALUE;
+    for (char[] line : input) {
+      int seatNumber = getSeatNumber(line);
+      minSeat = Math.min(minSeat, seatNumber);
+      maxSeat = Math.max(maxSeat, seatNumber);
+      seats.add(seatNumber);
+    }
+
+    for (int i = minSeat + 1; i < maxSeat; i++) {
       if (!seats.contains(i) && seats.contains(i - 1) && seats.contains(i + 1)) {
-        System.out.println(i);
-        return;
+        return i;
       }
     }
+    return -1;
   }
 
-  static void partOne(Stream<String> lines) {
-    OptionalInt max = lines.map(String::toCharArray).
-        map(DayFive::getSeat).mapToInt(seat -> seat.seatNumber).max();
 
-    max.ifPresent(System.out::println);
-  }
-
-  private static Seat getSeat(char[] line) {
+  private static int getSeatNumber(char[] line) {
     int minRow = 0;
     int maxRow = 127;
     for (int i = 0; i < 7; i++) {
@@ -54,8 +57,9 @@ public class DayFive {
       }
     }
 
-    return new Seat(minRow, minColumn);
+    return new Seat(minRow, minColumn).seatNumber;
   }
+
 
   public static class Seat {
     int row;
