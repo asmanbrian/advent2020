@@ -106,16 +106,8 @@ public class DayEleven {
           if (grid[i][j] != '.') {
             break;
           }
-          if (i < y) {
-            i--;
-          } else if (i > y) {
-            i++;
-          }
-          if (j < x) {
-            j--;
-          } else if (j > x) {
-            j++;
-          }
+          i += Integer.compare(i, y);
+          j += Integer.compare(j, x);
         }
       }
     }
