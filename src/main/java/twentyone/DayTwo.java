@@ -1,4 +1,4 @@
-package twentyone.daytwo;
+package twentyone;
 
 import java.io.IOException;
 import java.nio.file.Files;
