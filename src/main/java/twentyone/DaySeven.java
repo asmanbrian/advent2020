@@ -44,12 +44,8 @@ public class DaySeven {
       }
     }
     System.out.println("Target " + bestTarget + " with fuel " + bestTargetFuel);
-    //sort
-    //go through, keeping track of how many are left of pointer, add that many each time
   }
 
-  // 0 1 2 3 4
-  // * *
   private static void partTwo(List<Integer> numbers, int[] sorted) {
     int bestTarget = 0;
 
@@ -74,36 +70,4 @@ public class DaySeven {
 
 
   }
-
-
-
-  //
-  //  private static void partTwo(List<Integer> numbers, int[] sorted) {
-  //    int bestTarget = 0;
-  //    int targetFuel = 0;
-  //
-  //    for (int i = 1; i < sorted.length; i++) {
-  //      targetFuel += (i * (i + 1) / 2) * sorted[i];
-  //    }
-  //    int bestTargetFuel = targetFuel;
-  //
-  //    for (int i = 1; i < sorted.length; i++) {
-  //      for (int j = 0; j < i; j++) {
-  //        targetFuel += (i - j) * sorted[j];
-  //      }
-  //      targetFuel -= sorted[i];
-  //      for (int j = i + 1; j < sorted.length; j++) {
-  //        targetFuel -= (j - i) * sorted[j];
-  //      }
-  //      if (targetFuel < bestTargetFuel) {
-  //        bestTarget = i;
-  //        bestTargetFuel = targetFuel;
-  //      }
-  //      System.out.println("Target " + i + " with fuel " + targetFuel);
-  //
-  //    }
-  //    System.out.println("Best target " + bestTarget + " with fuel " + bestTargetFuel);
-  //
-  //
-  //  }
 }
