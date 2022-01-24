@@ -3,7 +3,9 @@ package twentyone;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DaySixteen {
@@ -31,21 +33,15 @@ public class DaySixteen {
     for (char c : line.toCharArray()) {
       binaryLine.append(conversions.get(c));
     }
-    partOne(binaryLine.toString());
+    partTwo(binaryLine.toString());
 
   }
 
   private static void partOne(String line) {
     int sum = 0;
     int pos = 0;
-    while (pos < line.length()) {
-      if (!line.substring(pos).contains("1")) {
-        break;
-      }
-      Packet packet = processPacket(line, pos, line.length());
-      sum += packet.version;
-      pos += packet.length;
-    }
+    Packet packet = processPacket(line, pos, line.length());
+    sum += packet.version;
     System.out.println(sum);
   }
 
@@ -58,6 +54,7 @@ public class DaySixteen {
     pos += 3;
 
     int type = Integer.parseInt(line.substring(pos, pos + 3), 2);
+    System.out.println("type: " + type);
     pos += 3;
     if (type == 4) {
       while (line.charAt(pos) == '1') {
@@ -66,12 +63,9 @@ public class DaySixteen {
       }
       value.append(line, pos + 1, pos + 5);
       pos += 5;
-      //      while (pos < limit && line.charAt(pos) == '0') {
-      //        System.out.println("skipping zero");
-      //        pos++;
-      //      }
       valueLong = Long.parseLong(value.toString(), 2);
     } else {
+      List<Packet> subPackets = new ArrayList<>();
       if (line.charAt(pos) == '0') {
         pos++;
         int bitLength = Integer.parseInt(line.substring(pos, pos + 15), 2);
@@ -81,6 +75,7 @@ public class DaySixteen {
           Packet packet = processPacket(line, pos, newLimit);
           version += packet.version;
           pos += packet.length;
+          subPackets.add(packet);
         }
       } else {
         pos++;
@@ -90,16 +85,64 @@ public class DaySixteen {
           Packet packet = processPacket(line, pos, limit);
           version += packet.version;
           pos += packet.length;
-
+          subPackets.add(packet);
         }
       }
+      switch (type) {
+        case 0:
+          valueLong = subPackets.stream().mapToLong(p -> p.value).sum();
+          if (valueLong < subPackets.stream().mapToLong(p -> p.value).min().getAsLong()) {
+            throw new IllegalArgumentException("");
+          }
+          break;
+        case 1:
+          //          valueLong = subPackets.stream().mapToLong(p -> p.value).reduce((l1, l2) -> l1 * l2).getAsLong();
+          valueLong = 1L;
+          for (Packet p : subPackets) {
+            valueLong *= p.value;
+          }
+          if (valueLong < subPackets.stream().mapToLong(p -> p.value).min().getAsLong()) {
+            throw new IllegalArgumentException("");
+          }
+          break;
+        case 2:
+          valueLong = subPackets.stream().mapToLong(p -> p.value).min().getAsLong();
+          break;
+        case 3:
+          valueLong = subPackets.stream().mapToLong(p -> p.value).max().getAsLong();
+          break;
+        case 5:
+          if (subPackets.size() != 2) {
+            throw new IllegalArgumentException("");
+          }
+          valueLong = subPackets.get(0).value > subPackets.get(1).value ? 1L : 0L;
+          break;
+        case 6:
+          if (subPackets.size() != 2) {
+            throw new IllegalArgumentException("");
+          }
+          valueLong = subPackets.get(0).value < subPackets.get(1).value ? 1L : 0L;
+          break;
+        case 7:
+          if (subPackets.size() != 2) {
+            throw new IllegalArgumentException("");
+          }
+          valueLong = subPackets.get(0).value == subPackets.get(1).value ? 1L : 0L;
+          break;
+        default:
+          throw new IllegalArgumentException("");
+      }
     }
-    //    System.out.println(line.substring(start, pos));
     System.out.println("value: " + valueLong);
     return new Packet(version, type, valueLong, pos - start);
   }
 
   private static void partTwo(String line) {
+    long sum = 0L;
+    int pos = 0;
+    Packet packet = processPacket(line, pos, line.length());
+    sum += packet.value;
+    System.out.println(sum);
   }
 
   private static class Packet {
